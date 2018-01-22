@@ -45,7 +45,7 @@ function rmcc_create_post_type() {
 //register scripts & styles
 wp_register_script( 'cmgallerypost-js', plugins_url( 'main.js', __FILE__ ), array(jquery), true );
 wp_register_script( 'masonry-pkgd-min-js', plugins_url( 'masonry.pkgd.min.js', __FILE__ ), array(jquery), true );
-wp_register_script( 'fontawesome-js', '//use.fontawesome.com/132025f8f9.js', true );
+//wp_register_script( 'fontawesome-js', '//use.fontawesome.com/132025f8f9.js', true );
 
 wp_register_style( 'bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', array(), '3.3.7' );
 
