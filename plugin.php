@@ -154,7 +154,7 @@ function cmgallerypost_short_shortcode( $atts ) {
                         }
                     }
                     
-			   ?>" data-location="" data-likes="3144" 
+			   ?>" data-location="" data-likes="3144" data-posturl="<?php the_permalink(); ?>"
                 data-imagepath="<?php echo esc_url($featured_img_url); ?>">
 		             <img src="<?php echo esc_url($featured_img_url); ?>" />
                 </div>
