@@ -243,7 +243,7 @@ function cmgallerypost_column_short_shortcode( $atts ) {
 	}	
 }
 // create shortcode with parameters so that the user can define what's queried - default is to list all blog posts
-add_shortcode( 'cmgallerypost_column_shortcode', 'cmgallerypost_column_short_shortcode' );
+add_shortcode( 'cmgallerypost_column', 'cmgallerypost_column_short_shortcode' );
 
 
  
