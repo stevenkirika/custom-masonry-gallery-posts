@@ -111,7 +111,33 @@ function cmgallerypost_short_shortcode( $atts ) {
 			   if($featured_img_url !=''){
 			   ?>
 		         <div class="pic_holder carouselGallery-col-1 col-md-4 carouselGallery-carousel" data-index="<?php echo $i ?>" data-username="<?php the_title(); ?>" 
-		         data-imagetext="<?php 
+		         data-imagetext="
+		    <b>Published on : <?php 
+		    $post_date = get_the_date('Y-m-d');
+		    $published_date = new datetime($post_date); 
+		    $todays_date = date('Y-m-d');
+		    $todays_date = new datetime($todays_date);
+                    $interval = $published_date->diff($todays_date);
+                    
+                    $years = intval($interval->format('%y'));
+                    $months = intval($interval->format('%m'));
+                    $days = intval($interval->format('%d'));
+                    
+                    if ($years >= 1){
+                        if($years == 1){echo $years.' YEAR AGO ';}
+                        else{echo $years.' YEARS AGO ';}
+                    }
+                    elseif ($months >= 1) {
+                        if($months == 1){echo $months. ' MONTH AGO ';}
+                        else{echo $months. ' MONTHS AGO ';}
+                    }
+                    else {
+                        if($months <= 1){echo $days.' DAY AGO';}
+                        else{echo $days.' DAYS AGO';}
+                        
+                    }
+		         ?></b> <br>		 
+	     <?php 
 			   $excerpt = '';
               if (has_excerpt()) {
               echo $excerpt = wp_strip_all_tags(get_the_excerpt());
