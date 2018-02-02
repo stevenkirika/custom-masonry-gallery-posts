@@ -45,6 +45,7 @@ function rmcc_create_post_type() {
 //register scripts & styles
 wp_register_script( 'cmgallerypost-js', plugins_url( 'main.js', __FILE__ ), array(jquery), true );
 wp_register_script( 'masonry-pkgd-min-js', plugins_url( 'masonry.pkgd.min.js', __FILE__ ), array(jquery), true );
+wp_register_script( 'imagesloaded-min-js', '//cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/3.0.4/jquery.imagesloaded.min.js', array(jquery), true );
 //wp_register_script( 'fontawesome-js', '//use.fontawesome.com/132025f8f9.js', true );
 
 wp_register_style( 'bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', array(), '3.3.7' );
@@ -74,6 +75,7 @@ function CMGalleryPost_enqueue_scripts() {
     wp_enqueue_style('cmgallerypost-style', plugins_url( 'style.css', __FILE__ )); 
     wp_enqueue_script( 'cmgallerypost-js');
     wp_enqueue_script('masonry-pkgd-min-js');
+    wp_enqueue_script('imagesloaded-min-js');
    // wp_enqueue_script('fontawesome-js');
 }
 add_action('wp_enqueue_scripts', 'cmgallerypost_enqueue_scripts');
@@ -83,13 +85,14 @@ add_action('wp_enqueue_scripts', 'cmgallerypost_enqueue_scripts');
 function cmgallerypost_short_shortcode( $atts ) {
 	ob_start();
  	extract(shortcode_atts( array ( 
+ 	    'post_type'=> array('cmgallerypost', 'post'),
 		'order' => 'date',
 		'orderby' => 'title',
 		'posts' => -1, 
 		'category' => '',
 	), $atts ) );
 	$options = array(
-		'post_type' => 'cmgallerypost',
+		'post_type' => $post_type,
 		'order' => $order,
 		'orderby' => $orderby,
 		'posts_per_page' => $posts, 
@@ -112,11 +115,11 @@ function cmgallerypost_short_shortcode( $atts ) {
 			   ?>
 		         <div class="pic_holder carouselGallery-col-1 col-md-4 carouselGallery-carousel" data-index="<?php echo $i ?>" data-username="<?php the_title(); ?>" 
 		         data-imagetext="
-		    <b>Published on : <?php 
-		    $post_date = get_the_date('Y-m-d');
-		    $published_date = new datetime($post_date); 
-		    $todays_date = date('Y-m-d');
-		    $todays_date = new datetime($todays_date);
+		         <small><b>Published on : <?php 
+		         $post_date = get_the_date('Y-m-d');
+		         $published_date = new datetime($post_date); 
+		         $todays_date = date('Y-m-d');
+		         $todays_date = new datetime($todays_date);
                     $interval = $published_date->diff($todays_date);
                     
                     $years = intval($interval->format('%y'));
@@ -136,13 +139,13 @@ function cmgallerypost_short_shortcode( $atts ) {
                         else{echo $days.' DAYS AGO';}
                         
                     }
-		         ?></b> <br>		 
-	     <?php 
+		         ?></b></small> <br><br>  <?php 
 			   $excerpt = '';
               if (has_excerpt()) {
               echo $excerpt = wp_strip_all_tags(get_the_excerpt());
-              echo '<br>';
+              echo '<br><br><em>';
               }
+              
               $post_tags = get_the_tags();
  
                     if ( $post_tags ) {
@@ -151,7 +154,14 @@ function cmgallerypost_short_shortcode( $atts ) {
                         }
                     }
                     
-			   ?>" data-location="" data-likes="3144" data-posturl="<?php the_permalink(); ?>"
+			   ?> </em>
+			   <br>
+			   <ul class='cmgallerypost-share'>
+			   <li><a href='http://www.facebook.com/sharer/sharer.php?u=<?php the_permalink(); ?>&title=<?php the_title(); ?>' target='_blank'><i class='fa fa-facebook'></i ></a></li>
+			   <li><a href='http://twitter.com/intent/tweet?status=<?php the_title(); ?>+<?php the_permalink(); ?>' target='_blank' ><i class='fa fa-twitter'></i ></a></li>
+			   <li><a href='https://plus.google.com/share?url=<?php the_permalink(); ?>' target='_blank'><i class='fa fa-google-plus'></i ></a></li>
+			   <ul>
+			   " data-location="" data-likes="" data-posturl="<?php the_permalink(); ?>"
                 data-imagepath="<?php echo esc_url($featured_img_url); ?>">
 		             <img src="<?php echo esc_url($featured_img_url); ?>" />
                 </div>
@@ -162,12 +172,53 @@ function cmgallerypost_short_shortcode( $atts ) {
 			endwhile;
 			wp_reset_postdata(); ?>
 		</div><!-- .masonry -->
+		<div style="clear:both;"></div>
 		  <script>
-          var container = document.querySelector('#masonry');
-          var masonry = new Masonry(container, {
-            //columnWidth: 50,
-            itemSelector: '.pic_holder'
-            });
+		  	jQuery.noConflict();
+                jQuery(document).ready(function () {
+                    
+                    // Main content container
+                	var $container = jQuery('#masonry');
+                	// Masonry + ImagesLoaded
+                	$container.imagesLoaded(function(){
+                		$container.masonry({
+                			// selector for entry content
+                			itemSelector: '.pic_holder',
+                			//columnWidth: 200
+                		});
+                	});
+                	
+                	// Infinite Scroll
+                /*	$container.infinitescroll({
+                
+                		// selector for the paged navigation (it will be hidden)
+                		navSelector  : ".navigation",
+                		// selector for the NEXT link (to page 2)
+                		nextSelector : ".nav-previous a",
+                		// selector for all items you'll retrieve
+                		itemSelector : ".pic_holder",
+                
+                		// finished message
+                		loading: {
+                			finishedMsg: 'No more pages to load.'
+                			}
+                		},
+                
+                		// Trigger Masonry as a callback
+                		function( newElements ) {
+                			// hide new items while they are loading
+                			var $newElems = jQuery( newElements ).css({ opacity: 0 });
+                			// ensure that images load before adding to masonry layout
+                			$newElems.imagesLoaded(function(){
+                				// show elems now they're ready
+                				$newElems.animate({ opacity: 1 });
+                				$container.masonry( 'appended', $newElems, true );
+                			});
+                
+                	});*/
+                });
+          
+          
            </script>
 	 
 	 
@@ -180,17 +231,18 @@ function cmgallerypost_short_shortcode( $atts ) {
 add_shortcode( 'cmgallerypost_masonry_shortcode', 'cmgallerypost_short_shortcode' );
 
 
-//3 coloumn layout
+//coloumn(s) layout - default 3 columns
 function cmgallerypost_column_short_shortcode( $atts ) {
 	ob_start();
  	extract(shortcode_atts( array ( 
+ 	    'post_type'=> array('cmgallerypost', 'post'),
 		'order' => 'date',
 		'orderby' => 'title',
 		'posts' => 3, 
 		'category' => '',
 	), $atts ) );
 	$options = array(
-		'post_type' => 'cmgallerypost',
+		'post_type' => $post_type,
 		'order' => $order,
 		'orderby' => $orderby,
 		'posts_per_page' => $posts, 
@@ -198,7 +250,8 @@ function cmgallerypost_column_short_shortcode( $atts ) {
 	);
 	$query = new WP_Query( $options );
 	if ( $query->have_posts() ) {?>
-		<div class="row">
+	     
+		<div id="masonry" class="row">
 		    <?php
 			$i=0;
 			while ( $query->have_posts() ) : $query->the_post(); 
@@ -212,12 +265,38 @@ function cmgallerypost_column_short_shortcode( $atts ) {
 			   if($featured_img_url !=''){
 			   ?>
 		         <div class="pic_holder carouselGallery-col-1 col-md-4 carouselGallery-carousel" data-index="<?php echo $i ?>" data-username="<?php the_title(); ?>" 
-		         data-imagetext="<?php 
+		         data-imagetext="
+		         <small><b>Published on : <?php 
+		         $post_date = get_the_date('Y-m-d');
+		         $published_date = new datetime($post_date); 
+		         $todays_date = date('Y-m-d');
+		         $todays_date = new datetime($todays_date);
+                    $interval = $published_date->diff($todays_date);
+                    
+                    $years = intval($interval->format('%y'));
+                    $months = intval($interval->format('%m'));
+                    $days = intval($interval->format('%d'));
+                    
+                    if ($years >= 1){
+                        if($years == 1){echo $years.' YEAR AGO ';}
+                        else{echo $years.' YEARS AGO ';}
+                    }
+                    elseif ($months >= 1) {
+                        if($months == 1){echo $months. ' MONTH AGO ';}
+                        else{echo $months. ' MONTHS AGO ';}
+                    }
+                    else {
+                        if($months <= 1){echo $days.' DAY AGO';}
+                        else{echo $days.' DAYS AGO';}
+                        
+                    }
+		         ?></b></small> <br><br>  <?php 
 			   $excerpt = '';
               if (has_excerpt()) {
               echo $excerpt = wp_strip_all_tags(get_the_excerpt());
-              echo '<br>';
+              echo '<br><br><em>';
               }
+              
               $post_tags = get_the_tags();
  
                     if ( $post_tags ) {
@@ -226,7 +305,14 @@ function cmgallerypost_column_short_shortcode( $atts ) {
                         }
                     }
                     
-			   ?>" data-location="" data-likes="3144" 
+			   ?> </em>
+			   <br>
+			   <ul class='cmgallerypost-share'>
+			   <li><a href='http://www.facebook.com/sharer/sharer.php?u=<?php the_permalink(); ?>&title=<?php the_title(); ?>' target='_blank'><i class='fa fa-facebook'></i ></a></li>
+			   <li><a href='http://twitter.com/intent/tweet?status=<?php the_title(); ?>+<?php the_permalink(); ?>' target='_blank' ><i class='fa fa-twitter'></i ></a></li>
+			   <li><a href='https://plus.google.com/share?url=<?php the_permalink(); ?>' target='_blank'><i class='fa fa-google-plus'></i ></a></li>
+			   <ul>
+			   " data-location="" data-likes="3144" 
                 data-imagepath="<?php echo esc_url($featured_img_url); ?>">
 		             <img src="<?php echo esc_url($featured_img_url); ?>" />
                 </div>
@@ -237,6 +323,22 @@ function cmgallerypost_column_short_shortcode( $atts ) {
 			endwhile;
 			wp_reset_postdata(); ?>
 		</div><!-- .row -->
+		  <script>
+		  	jQuery.noConflict();
+                jQuery(document).ready(function () {
+                    
+                    // Main content container
+                	var $container = jQuery('#masonry');
+                	// Masonry + ImagesLoaded
+                	$container.imagesLoaded(function(){
+                		$container.masonry({
+                			// selector for entry content
+                			itemSelector: '.pic_holder',
+                			//columnWidth: 200
+                		});
+                	});
+           });
+           </script>
 		 
 	<?php $myvariable = ob_get_clean();
 	return $myvariable;
