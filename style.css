@@ -1,3 +1,4 @@
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);
 .noscroll{
     overflow:  hidden;
     position: fixed;
@@ -13,6 +14,11 @@
   width: auto;
   display: inline-block;
 }
+
+.cmgallerypost-share{ list-style:none; float:right;}
+.cmgallerypost-share li{display:inline-block;}
+.cmgallerypost-share li a{ color:#555;}
+
 .carouselGallery-button{
     text-align: center;
 }
@@ -156,7 +162,7 @@ box-shadow: 0 0 0 4px rgba(255,255,255,1);
 }
 .carouselGallery-scrollbox {
     display: block;
-    // max-height - set by javascript
+    /*max-height - set by javascript*/
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -198,7 +204,7 @@ box-shadow: 0 0 0 4px rgba(255,255,255,1);
     width: 335px;
     height: 100%;
 }
-.carouselGallery-modal-text:hover { // ie10 transform glitch fix
+.carouselGallery-modal-text:hover { /* ie10 transform glitch fix*/
     background-color: #fffffe;
 }
 .carouselGallery-modal-image img{
@@ -322,9 +328,10 @@ box-shadow: 0 0 0 4px rgba(255,255,255,1);
     -moz-osx-font-smoothing: grayscale;
 }
 
-// =================================
+/*=================================
 // === Icons mixin =================
 // =================================
+
 .icons() {
     font-family: 'icons';
     speak: none;
@@ -335,11 +342,11 @@ box-shadow: 0 0 0 4px rgba(255,255,255,1);
     font-variant: normal;
     text-transform: none;
     line-height: 1;
-    /* Better Font Rendering =========== */
+    /* Better Font Rendering =========== 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-
+*/
     .icon-star-full:before {
         content: "\e905";
     }
